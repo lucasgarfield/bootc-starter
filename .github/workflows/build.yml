@@ -34,3 +34,7 @@ jobs:
           tags: ${{ env.IMAGE }}:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  disk-image:
+    needs: build
+    uses: ./.github/workflows/disk-image.yml
