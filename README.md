@@ -16,7 +16,7 @@ cd YOUR-REPO
 **2. Edit the Containerfile and push**
 
 ```dockerfile
-FROM quay.io/fedora/fedora-bootc:42
+FROM quay.io/fedora/fedora-bootc:latest
 
 RUN dnf -y install vim-enhanced tmux && dnf clean all
 
@@ -60,6 +60,10 @@ It pulls the latest container image and applies it on next boot.
 ## Rebuild the disk image
 
 The disk image builds automatically on your first push. After that, you can rebuild it any time from the **Actions** tab → **Disk image** → **Run workflow**.
+
+## Install on bare metal
+
+To install on a real machine, build an ISO from the **Actions** tab → **ISO installer** → **Run workflow**. Download `install.iso` from the **Releases** page, flash it to a USB drive, and boot from it. The installer will pull your container image and install it to disk.
 
 ---
 

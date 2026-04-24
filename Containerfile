@@ -1,4 +1,4 @@
-FROM quay.io/fedora/fedora-bootc:42
+FROM quay.io/fedora/fedora-bootc:latest
 
 # Add your packages here
 RUN dnf -y install vim-enhanced tmux && dnf clean all
