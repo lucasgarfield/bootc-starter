@@ -40,7 +40,7 @@ jobs:
             ${{ env.IMAGE }}:latest
 
       - name: Rename disk image
-        run: mv output/**/*.qcow2 output/disk.qcow2
+        run: sudo mv output/qcow2/disk.qcow2 output/disk.qcow2
 
       - name: Upload to release
         env:
