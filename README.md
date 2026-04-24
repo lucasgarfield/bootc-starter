@@ -6,29 +6,46 @@ Define your OS in a `Containerfile`. Get a bootable disk image. That's it.
 
 **1. Use this template**
 
-Click **"Use this template"** at the top of this page to create your repo.
+Click **"Use this template"** at the top of this page to create your repo, then clone it:
 
-**2. Make your package visible**
+```bash
+git clone git@github.com:YOUR-USER/YOUR-REPO.git
+cd YOUR-REPO
+```
 
-After your first push, go to your GitHub profile → **Packages** → find your new image → **Package settings** → **Change visibility → Public**.
-
-> This lets your machines pull updates without any credentials.
-
-**3. Edit the Containerfile and push**
+**2. Edit the Containerfile and push**
 
 ```dockerfile
 FROM quay.io/fedora/fedora-bootc:42
 
-RUN dnf -y install vim tmux && dnf clean all
+RUN dnf -y install vim-enhanced tmux && dnf clean all
+
+RUN useradd -m -G wheel admin && echo "admin:password" | chpasswd
 ```
 
-Add whatever packages you want. Push to `main`. GitHub Actions will build a `.qcow2` disk image automatically — find it in the **Actions** tab under **Artifacts**.
+Add whatever packages you want. Push to `main` and GitHub Actions will:
+- Build your container image and push it to `ghcr.io`
+- Build a `.qcow2` disk image and attach it to a **Release**
 
-## Boot your image
+**3. Make your package visible**
+
+After the first build, go to your GitHub profile → **Packages** → find your new image → **Package settings** → **Change visibility → Public**.
+
+> This lets your machines pull updates with `bootc upgrade` without any credentials.
+>
+> If you delete and recreate the repo, delete the old package first — otherwise the build will fail with a permission error.
+
+**4. Download and boot**
+
+Grab `disk.qcow2` from the **Releases** page and boot it:
 
 ```bash
-qemu-system-x86_64 -m 2048 -cpu host -enable-kvm -hda bootc-disk-image.qcow2
+qemu-system-x86_64 -m 2048 -cpu host -enable-kvm -hda disk.qcow2
 ```
+
+Log in with username **admin** and password **password**.
+
+> **Change these credentials** before putting this anywhere real. See [docs/going-further.md](docs/going-further.md) for SSH key setup.
 
 ## Upgrade a running machine
 
@@ -38,7 +55,11 @@ On any machine running your image:
 sudo bootc upgrade
 ```
 
-That's all. It pulls the latest container image and applies it on next boot.
+It pulls the latest container image and applies it on next boot.
+
+## Rebuild the disk image
+
+The disk image builds automatically on your first push. After that, you can rebuild it any time from the **Actions** tab → **Disk image** → **Run workflow**.
 
 ---
 

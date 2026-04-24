@@ -11,6 +11,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
+      contents: write
       packages: read
 
     steps:
@@ -38,9 +39,16 @@ jobs:
             --rootfs ext4 \
             ${{ env.IMAGE }}:latest
 
-      - name: Upload
-        uses: actions/upload-artifact@v4
-        with:
-          name: bootc-disk-image
-          path: output/**/*.qcow2
-          retention-days: 7
+      - name: Rename disk image
+        run: mv output/**/*.qcow2 output/disk.qcow2
+
+      - name: Upload to release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          gh release delete latest --yes || true
+          gh release create latest output/disk.qcow2 \
+            --title "Latest disk image" \
+            --notes "Built from the latest container image on $(date -u +%Y-%m-%d)." \
+            --latest
