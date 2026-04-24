@@ -38,3 +38,6 @@ jobs:
   disk-image:
     needs: build
     uses: ./.github/workflows/disk-image.yml
+    permissions:
+      contents: write
+      packages: read
